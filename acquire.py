@@ -18,7 +18,7 @@ def new_titanic_data(SQL_query):
     return pd.read_sql(SQL_query, url)
 
 
-def get_titanic_data(SQL_query, directory, filename="titanic.csv"):
+def get_titanic_data(directory, filename="titanic.csv"):
     """
     This function will:
     - Check local directory for csv file
@@ -28,6 +28,7 @@ def get_titanic_data(SQL_query, directory, filename="titanic.csv"):
         - write df to csv
     - Output titanic df
 """
+    SQL_query = "select * from passengers"
     if os.path.exists(directory + filename):
         df = pd.read_csv(filename) 
         return df
@@ -54,7 +55,7 @@ def new_iris_data(SQL_query):
     
     return pd.read_sql(SQL_query, url)
 
-def get_iris_data(SQL_query, directory, filename="iris_db.csv"):
+def get_iris_data(directory, filename="iris_db.csv"):
     """
     This function will:
     - Check local directory for csv file
@@ -64,6 +65,7 @@ def get_iris_data(SQL_query, directory, filename="iris_db.csv"):
         - write df to csv
     - Output iris df
 """
+    SQL_query = "select * from measurements join species using(species_id)"
     if os.path.exists(directory + filename):
         df = pd.read_csv(filename) 
         return df
@@ -91,7 +93,7 @@ def new_telco_data(SQL_query):
     
     return pd.read_sql(SQL_query, url)
 
-def get_telco_data(SQL_query, directory, filename="telco_churn.csv"):
+def get_telco_data(directory, filename="telco_churn.csv"):
     """
     This function will:
     - Check local directory for csv file
@@ -101,6 +103,16 @@ def get_telco_data(SQL_query, directory, filename="telco_churn.csv"):
         - write df to csv
     - Output telco_churn df
 """
+    SQL_query = ''' select * from customers
+left join customer_churn
+using (customer_id)
+left join customer_signups
+using (customer_id)
+join internet_service_types
+using (internet_service_type_id)
+join payment_types
+using (payment_type_id);'''
+
     if os.path.exists(directory + filename):
         df = pd.read_csv(filename) 
         return df
