@@ -20,7 +20,7 @@ def new_titanic_data(SQL_query):
 
 def get_titanic_data(directory, filename="titanic.csv"):
     """
-    This function will:
+    This function will:s
     - Check local directory for csv file
         - return if exists
     - If csv doesn't exists:

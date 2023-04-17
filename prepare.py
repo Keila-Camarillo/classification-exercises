@@ -98,7 +98,7 @@ def get_prep_split_titanic(df=get_prep_titanic(), stratify_col= "survived"):
 
 
 #prep telco 
-def prep_telco(df):
+def prep_telco(df=acq.get_telco_data(directory=os.getcwd())):
     '''
     The function will clean the telco dataset
     '''
@@ -106,13 +106,7 @@ def prep_telco(df):
     df = df.drop(columns=["customer_id","payment_type_id", "internet_service_type_id", "contract_type_id"])
     # remove nulls and replace nulls with 0 (non-churn customers)
     df["churn_month"] = df.churn_month.fillna(0)
-    # replace no service with no 
-    df["multiple_lines"] = df.multiple_lines.replace("No phone service", "No")
-    df["online_security"] = df.online_security.replace("No internet service", "No")
-    df["online_backup"] = df.online_backup.replace("No internet service", "No")
-    df["device_protection"] = df.device_protection.replace("No internet service", "No")
-    df["streaming_tv"] = df.streaming_tv.replace("No internet service", "No")
-    df["streaming_movies"] = df.streaming_movies.replace("No internet service", "No")
+    df["total_charges"] = df.total_charges.replace(" ", 0).astype(float)
     # create dummies
     dummy_df = pd.get_dummies(df[["gender", "partner", "dependents", "phone_service", "multiple_lines", "online_security", "online_backup", "device_protection", "streaming_tv", "paperless_billing", "internet_service_type", "payment_type"]], drop_first=[True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True])
     df = pd.concat([df, dummy_df], axis=1)
@@ -126,22 +120,10 @@ def get_prep_telco(directory=os.getcwd()):
     df = acq.get_telco_data(directory)
     df = pd.DataFrame(df)
     # drop unecessary columns
-    df = df.drop(columns=["customer_id","payment_type_id", "internet_service_type_id", "contract_type_id"])
-    # remove nulls and replace nulls with 0 (non-churn customers)
-    df["churn_month"] = df.churn_month.fillna(0)
-    # replace no service with no 
-    df["multiple_lines"] = df.multiple_lines.replace("No phone service", "No")
-    df["online_security"] = df.online_security.replace("No internet service", "No")
-    df["online_backup"] = df.online_backup.replace("No internet service", "No")
-    df["device_protection"] = df.device_protection.replace("No internet service", "No")
-    df["streaming_tv"] = df.streaming_tv.replace("No internet service", "No")
-    df["streaming_movies"] = df.streaming_movies.replace("No internet service", "No")
-    # create dummies
-    dummy_df = pd.get_dummies(df[["gender", "partner", "dependents", "phone_service", "multiple_lines", "online_security", "online_backup", "device_protection", "streaming_tv", "paperless_billing", "internet_service_type", "payment_type"]], drop_first=[True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True])
-    df = pd.concat([df, dummy_df], axis=1)
+    df = prep_telco(df)
     return df
 
-def get_prep_split_telco(df=get_prep_telco(), stratify_col= "churn"):
+def get_prep_split_telco(df=prep_telco(), stratify_col= "churn"):
     '''
     Takes in two arguments the dataframe name and the ("name" - must be in string format) to stratify  and 
     return train, validate, test subset dataframes will output train, validate, and test in that order
@@ -159,7 +141,7 @@ def get_prep_split_telco(df=get_prep_telco(), stratify_col= "churn"):
 # split data
 def split_data(df, stratify_col):
     '''
-    Takes in two arguments the dataframe name and the ("name" - must be in string format) to stratify  and 
+    Takes in two arguments the dataframe name and the ("stratify_name" - must be in string format) to stratify  and 
     return train, validate, test subset dataframes will output train, validate, and test in that order
     '''
     train, test = train_test_split(df, #first split
@@ -167,7 +149,7 @@ def split_data(df, stratify_col):
                                    random_state=123, 
                                    stratify=df[stratify_col])
     train, validate = train_test_split(train, #second split
-                                       test_size=.25, 
-                                       random_state=123, 
-                                       stratify=train[stratify_col])
+                                    test_size=.25, 
+                                    random_state=123, 
+                                    stratify=train[stratify_col])
     return train, validate, test
