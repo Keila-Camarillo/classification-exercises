@@ -103,12 +103,13 @@ def prep_telco(df=acq.get_telco_data(directory=os.getcwd())):
     The function will clean the telco dataset
     '''
     # drop unecessary columns
-    df = df.drop(columns=["customer_id","payment_type_id", "internet_service_type_id", "contract_type_id"])
+    df = df.drop(columns=["customer_id","payment_type_id", "internet_service_type_id", "contract_type_id", "phone_service", "multiple_lines", "online_security", "online_backup", "device_protection", "streaming_tv", "streaming_movies"])
     # remove nulls and replace nulls with 0 (non-churn customers)
     df["churn_month"] = df.churn_month.fillna(0)
     df["total_charges"] = df.total_charges.replace(" ", 0).astype(float)
     # create dummies
-    dummy_df = pd.get_dummies(df[["gender", "partner", "dependents", "phone_service", "multiple_lines", "online_security", "online_backup", "device_protection", "streaming_tv", "paperless_billing", "internet_service_type", "payment_type"]], drop_first=[True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True])
+    dummy_df = pd.get_dummies(df[["gender", "partner", "dependents", "paperless_billing", "internet_service_type", "payment_type", "tech_support", "churn"]], drop_first=[True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True])
+    df = df.drop(columns=["gender", "partner", "dependents", "paperless_billing", "churn_month",  "internet_service_type", "payment_type", "tech_support", "signup_date", "churn"])
     df = pd.concat([df, dummy_df], axis=1)
     return df
 
@@ -123,7 +124,7 @@ def get_prep_telco(directory=os.getcwd()):
     df = prep_telco(df)
     return df
 
-def get_prep_split_telco(df=prep_telco(), stratify_col= "churn"):
+def get_prep_split_telco(df=prep_telco(), stratify_col= "churn_Yes"):
     '''
     Takes in two arguments the dataframe name and the ("name" - must be in string format) to stratify  and 
     return train, validate, test subset dataframes will output train, validate, and test in that order
