@@ -121,7 +121,7 @@ def get_prep_telco(directory=os.getcwd()):
     df = acq.get_telco_data(directory)
     df = pd.DataFrame(df)
     # drop unecessary columns
-    df = prep_telco(df)
+    df = prep_telco(df) 
     return df
 
 def get_prep_split_telco(df=prep_telco(), stratify_col= "churn_Yes"):
