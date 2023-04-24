@@ -71,7 +71,7 @@ def get_prep_titanic(directory=os.getcwd()):
     '''
     df = acq.get_titanic_data(directory)
     df = pd.DataFrame(df)
-    df = df.drop(columns =['embark_town','class','age','deck'])
+    df = df.drop(columns =['embark_town','class','deck'])
 
     df.embarked = df.embarked.fillna(value='S')
 

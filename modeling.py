@@ -16,6 +16,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import classification_report, confusion_matrix, plot_confusion_matrix
 
+# Logistic regression imports 
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+
 
 def create_x_y(train, validate, test, target, drop_col=[]):
     """
@@ -113,7 +117,7 @@ def knn_model_accuracies(x_train, y_train, x_validate, y_validate):
 def knn_viz_20(x_train, y_train, x_validate, y_validate):
     '''
     This function helps visualize your knn results by fitting the given arguments (x_train, y_train, x_validate, y_validate)
-    and using these features with the KNeighborsClassifier to calculate through an iteration of 20 and find a train score and validation score and producing the vsual plot
+    and using these features with the KNeighborsClassifier to calculate through an iteration of 20 and find a train score and validation score and producing the visual plot
     '''
     metrics = []
 
@@ -145,3 +149,39 @@ def knn_viz_20(x_train, y_train, x_validate, y_validate):
     plt.ylabel('Accuracy')
     plt.xticks(np.arange(0,21,1))
     plt.grid()
+
+def establish_baseline(y_train):
+    #est baseline
+    baseline_prediction = y_train.mode()
+    
+    #create series of prediction with that baseline val
+    #same len as y_train
+    y_train_pred = pd.Series((baseline_prediction[0]), range(len(y_train)))
+    
+    #compute the confusion matrix for Accuracy
+    cm= confusion_matrix(y_train, y_train_pred)
+    tn, fp, fn, tp = cm.ravel()
+    
+    accuracy = (tp+tn) / (tp+tn+fp+fn)
+    
+    return accuracy
+
+def coef_weight(logit):
+    '''
+    This function helps find the weight, of each feature, 
+    using the coefficients and the intercept.
+    Takes only one argument the name of the object model
+    '''
+    print('Coefficient: \n', logit.coef_)
+    print('Intercept: \n', logit.intercept_)
+
+def predictions(x_train, logit):  
+    '''
+    This function helps with creating predictions based on the entered
+    x_train and object model.
+    Takes two arguments x_train and object model
+    and return the y predicitons and y predictions probablility
+    '''  
+    y_pred = logit.predict(x_train)
+    y_pred_proba = logit.predict_proba(x_train)
+    return y_pred, y_pred_proba    
